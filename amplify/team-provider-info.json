@@ -10,6 +10,11 @@
             "StackName": "amplify-erinswebsite-dev-222255",
             "StackId": "arn:aws:cloudformation:eu-west-1:106887332414:stack/amplify-erinswebsite-dev-222255/16155ee0-9172-11ea-9de2-026ec215cf88",
             "AmplifyAppId": "d2iiremtho5ec5"
+        },
+        "categories": {
+            "auth": {
+                "erinswebsite932fe9b0932fe9b0": {}
+            }
         }
     }
 }
