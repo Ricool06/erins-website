@@ -5,15 +5,20 @@
   "dependencies": {
     "@aws-amplify/ui-react": "^0.2.5",
     "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
     "@types/react": "^16.9.34",
     "@types/react-dom": "^16.9.7",
+    "antd": "^4.2.2",
     "aws-amplify": "^3.0.10",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-mde": "^10.0.3",
+    "react-redux": "^7.2.0",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.1",
+    "redux": "^4.0.5",
+    "redux-thunk": "^2.3.0",
+    "showdown": "^1.9.1",
     "typescript": "^3.7.5"
   },
   "scripts": {
@@ -40,17 +45,18 @@
   },
   "devDependencies": {
     "@aws-amplify/cli": "^4.19.0",
-    "@types/chromedriver": "^81.0.0",
+    "@types/enzyme": "^3.10.5",
+    "@types/enzyme-adapter-react-16": "^1.0.6",
     "@types/jest": "^24.9.1",
     "@types/node": "^12.12.38",
+    "@types/react-redux": "^7.1.8",
     "@types/react-router-dom": "^5.1.5",
-    "@wdio/spec-reporter": "^6.1.9",
+    "@types/showdown": "^1.9.3",
     "aws-sdk": "^2.673.0",
-    "chromedriver": "^81.0.0",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.2",
     "playwright": "^1.0.1",
     "ts-jest": "^25.5.1",
-    "ts-node": "^8.10.1",
-    "wdio-chromedriver-service": "^6.0.3",
-    "webdriverio": "^6.1.9"
+    "ts-node": "^8.10.1"
   }
 }

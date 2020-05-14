@@ -1,42 +1,38 @@
-import 'expect-webdriverio';
-import { BrowserObject } from 'webdriverio';
 import crypto from 'crypto';
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
 import awsconfig from '../aws-exports';
+import playwright, { BrowserContextOptions, Page } from 'playwright';
+
+const browserPromise = playwright.chromium.launch({
+  headless: false,
+});
+
+export const baseUrlPlus = (path: string) => awsconfig.aws_content_delivery_url + path;
 
 export const generateSecureString = ({ length, suffix }: { length?: number, suffix?: string } = {}) => crypto
   .randomBytes(length || 24)
   .toString('hex') + (suffix || '');
 
+export const createBroswerContext = async (options?: BrowserContextOptions) => (await browserPromise)
+  .newContext(options);
+
 export const cognitoProvider = new CognitoIdentityServiceProvider();
 
-export const signInUser = async (username: string, password: string, browser: BrowserObject) => {
-  const authenticator = await browser.$('body > #root > div > header > amplify-authenticator');
+export const signInUser = async (username: string, password: string, page: Page) => {
+  await page.waitForSelector('#username');
 
-  const authFields = await authenticator.shadow$('slot > amplify-sign-in')
-    .then(el => el.shadow$('amplify-form-section > amplify-auth-fields'));
+  const usernameField = await page.$('#username');
+  const passwordField = await page.$('#password');
 
-  const usernameField = await authFields.shadow$('div > amplify-username-field')
-    .then(el => el.shadow$('amplify-form-field'))
-    .then(el => el.shadow$('#username'));
+  await usernameField!.type(username);
+  await passwordField!.type(password);
 
-  const passwordField = await authFields.shadow$('div > amplify-password-field')
-    .then(el => el.shadow$('amplify-form-field'))
-    .then(el => el.shadow$('#password'));
+  await page.keyboard.press('Enter');
 
-  await usernameField.setValue(username);
-  await passwordField.setValue(password);
+  const skip = await page.waitForSelector('form > amplify-section > div:nth-child(3) > slot > div > span > amplify-button');
 
-  await browser.keys('\uE006');
-
-  const skipButton = await authenticator.shadow$('slot > amplify-verify-contact')
-    .then(el => el.shadow$('amplify-form-section'))
-    .then(el => el.shadow$('form > amplify-section > div:nth-child(3) > slot > div > span > amplify-button'));
-
-  await skipButton.click();
-
-  await browser.waitUntil(async () => !(await skipButton.isDisplayedInViewport()), { timeout: 20000 });
-} 
+  await skip!.click();
+}
 
 export const createUser = async () => {
   const email = generateSecureString({ suffix: '@nowhere.eu' });
@@ -66,8 +62,7 @@ export const createUser = async () => {
     Permanent: true,
   }).promise();
 
+  await new Promise(resolve => setTimeout(resolve, 4000));
+
   return { username, password };
 }
-
-// document
-// .querySelector("#root > div > header > amplify-authenticator").shadowRoot

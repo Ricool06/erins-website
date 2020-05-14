@@ -1,0 +1,11 @@
+{
+    "AppSyncApiName": "erinswebsite",
+    "DynamoDBBillingMode": "PAY_PER_REQUEST",
+    "DynamoDBEnableServerSideEncryption": "false",
+    "AuthCognitoUserPoolId": {
+        "Fn::GetAtt": [
+            "autherinswebsite932fe9b0932fe9b0",
+            "Outputs.UserPoolId"
+        ]
+    }
+}

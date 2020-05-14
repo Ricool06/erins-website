@@ -1,51 +1,39 @@
-import 'expect-webdriverio';
 import awsconfig from '../aws-exports';
-import chromedriver from 'chromedriver';
-import { remote, BrowserObject } from 'webdriverio';
-import { cognitoProvider, signInUser, createUser } from '../support';
+import { cognitoProvider, signInUser, createUser, createBroswerContext, baseUrlPlus } from '../support';
+import { ChromiumBrowserContext } from 'playwright';
 
 jest.setTimeout(30000);
 
 describe('Login', () => {
-  let browser: BrowserObject;
+  let ctx: ChromiumBrowserContext;
   let username: string;
   let password: string;
 
   beforeAll(async () => {
-    await chromedriver.start(['--port=9515']);
-
-    browser = await remote({
-      logLevel: 'warn',
-      baseUrl: awsconfig.aws_content_delivery_url,
-      capabilities: {
-        browserName: 'chrome',
-      },
-      automationProtocol: 'webdriver',
-      port: 9515
-    });
-
-    (global as any).browser = browser;
-
     const user = await createUser();
     username = user.username;
     password = user.password;
+
+    ctx = await createBroswerContext();
   });
 
   it('should allow a logged-in user to write a new post', async () => {
-    await browser.url('/');
-    await browser.execute(() => localStorage.clear());
-    await browser.url('/new-post');
+    const page = await ctx.newPage();
+    await page.goto(baseUrlPlus('/new-post'));
 
-    await signInUser(username, password, browser);
+    await signInUser(username, password, page);
+    const textArea = await page.$('textarea');
+    const postButton = await page.$('button');
 
-    expect(await (await browser.$('textarea')).isDisplayed()).toBe(true);
+    await textArea!.type('This is a new blog post!');
+    await postButton!.click();
+
+    const toast = await page.$('#toast');
+
+    expect(toast!.textContent).toContain('Blog post created!');
   });
 
   afterAll(async () => {
-    await browser.deleteSession();
-    await browser.shutdown();
-    await chromedriver.stop();
-
     await cognitoProvider.adminDeleteUser({
       UserPoolId: awsconfig.aws_user_pools_id,
       Username: username,
