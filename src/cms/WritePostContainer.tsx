@@ -1,21 +1,37 @@
-import React, { FC, Dispatch } from "react";
-import { connect, ConnectedProps } from 'react-redux';
+import React, { FC, useEffect } from "react";
+import { useDispatch, useSelector } from 'react-redux';
 import WritePost from "./WritePost";
-import { PostAction } from "src/redux/actions/types";
-import { createPost } from "src/redux/actions";
 import { CreatePostInput } from "src/API";
+import { createPost } from "src/redux/actions";
+import { State } from "src/redux/reducers";
+import { Modal, Result } from "antd";
 
-export const connector = connect();
+const WritePostContainer: FC = () => {
+  const dispatch = useDispatch();
+  const onSubmit = (post: CreatePostInput) => {
+    dispatch(createPost(post));
+  }
 
-export type ReduxProps = ConnectedProps<typeof connector>;
+  const createPostFeedback = useSelector(
+    (state: State) => state.createPostFeedback);
 
-export const WritePostContainer: FC<ReduxProps> = ({ dispatch }: { dispatch: Dispatch<PostAction> }) => {
+  useEffect(() => {
+    const {show, status} = createPostFeedback;
+    if (show) {
+      const title = status === 'success'
+        ? 'Blog posted! 😘'
+        : 'Blog failed to post. 🙁';
 
-  const onSubmit = (post: CreatePostInput) => dispatch(createPost(post));
+      Modal.info({
+        icon: null,
+        content: (<Result status={status} title={title} />)
+      });
+    }
+  }, [createPostFeedback]);
 
   return (
     <WritePost onSubmit={onSubmit} />
   );
 }
 
-export default connector(WritePostContainer);
+export default WritePostContainer;

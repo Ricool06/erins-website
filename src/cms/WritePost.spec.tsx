@@ -57,4 +57,18 @@ describe('WritePost', () => {
     expect(mockConverter.makeHtml).toHaveBeenCalledWith(expectedMarkdown);
     expect(node?.toString()).toEqual(expectedHtml);
   });
+
+  // it('should store the tab type', () => {
+  //   // const [selectedTab, setSelectedTab] = React.useState<"write" | "preview">(
+  //   //   "write"
+  //   // );
+  //   const wrapper = mount(<WritePost onSubmit={jest.fn()} />);
+  //   const editor = wrapper.find(ReactMde);
+
+  //   expect(wrapper.state('selectedTab')).toEqual('write');
+
+  //   editor.props().onTabChange('preview');
+
+  //   expect(wrapper.state('selectedTab')).toEqual('preview');
+  // });
 });
