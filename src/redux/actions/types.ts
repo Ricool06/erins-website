@@ -1,14 +1,21 @@
-import { CreatePostInput } from "src/API";
+import { CreatePostInput, ListPostsQueryVariables, ListPostsQuery } from "src/API";
 import { Action } from "redux";
 
 export const CREATE_POST = 'CREATE_POST';
+export const LIST_POSTS = 'LIST_POSTS';
 
 interface CreatePostAction extends Action<string> {
   type: typeof CREATE_POST,
   payload: CreatePostInput
 }
 
-export type PostAction = CreatePostAction;
+interface ListPostsAction extends Action<string> {
+  type: typeof LIST_POSTS,
+  payload: ListPostsQueryVariables
+}
+
+export type PostAction = CreatePostAction | ListPostsAction;
+
 
 export const CREATE_POST_SUCCEEDED = 'CREATE_POST_SUCCEEDED';
 export const CREATE_POST_FAILED = 'CREATE_POST_FAILED';
@@ -30,3 +37,21 @@ export type CreatePostResultAction =
   CreatePostSucceeded |
   CreatePostFailed |
   CreatePostResetResult;
+
+
+export const LIST_POSTS_SUCCEEDED = 'LIST_POSTS_SUCCEEDED';
+export const LIST_POSTS_FAILED = 'LIST_POSTS_FAILED';
+export const LIST_POSTS_RESET_RESULT = 'LIST_POSTS_RESET_RESULT';
+
+interface ListPostsSucceeded extends Action<string> {
+  type: typeof LIST_POSTS_SUCCEEDED,
+  payload: ListPostsQuery
+}
+
+interface ListPostsFailed extends Action<string> {
+  type: typeof LIST_POSTS_FAILED
+}
+
+export type ListPostsResultAction =
+  ListPostsSucceeded |
+  ListPostsFailed;

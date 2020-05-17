@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import WritePost from "./WritePost";
 import { CreatePostInput } from "src/API";
 import { createPost } from "src/redux/actions";
-import { State } from "src/redux/reducers";
+import { CreatePostFeedback, RootState } from "src/redux/reducers";
 import { Modal, Result } from "antd";
 import { CreatePostResultAction } from "src/redux/actions/types";
 
@@ -18,8 +18,8 @@ const WritePostContainer: FC = () => {
     dispatch(createPost(post));
   }
 
-  const createPostFeedback = useSelector(
-    (state: State) => state.createPostFeedback);
+  const createPostFeedback = useSelector<RootState, CreatePostFeedback>(
+    (state) => state.createPostFeedback);
 
   const [canPost, setCanPost] = useState(true);
 

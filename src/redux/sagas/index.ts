@@ -1,6 +1,7 @@
-import { takeLatest, call, all, put } from 'redux-saga/effects';
-import { CREATE_POST, PostAction, CreatePostResultAction } from '../actions/types';
+import { takeLatest, call, all, put, takeLeading } from 'redux-saga/effects';
+import { CREATE_POST, PostAction, CreatePostResultAction, LIST_POSTS, ListPostsResultAction, LIST_POSTS_FAILED } from '../actions/types';
 import * as mutations from 'src/graphql/mutations';
+import * as queries from 'src/graphql/queries';
 import { API, graphqlOperation } from 'aws-amplify';
 import awsconfig from '../../aws-exports';
 
@@ -23,6 +24,24 @@ export function* watchCreatePost() {
   yield takeLatest(CREATE_POST, createPost);
 }
 
+export function* listPosts(postAction: PostAction) {
+  try {
+    const { data: listPostsQueryResult } = yield call(
+      [API, 'graphql'],
+      graphqlOperation(queries.listPosts, postAction.payload));
+
+    yield put<ListPostsResultAction>(
+      { type: 'LIST_POSTS_SUCCEEDED', payload: listPostsQueryResult });
+  }
+  catch {
+    yield put<ListPostsResultAction>({ type: LIST_POSTS_FAILED });
+  }
+}
+
+export function* watchListPosts() {
+  yield takeLeading(LIST_POSTS, listPosts);
+}
+
 export function* rootSaga() {
-  yield all([watchCreatePost()]);
+  yield all([watchCreatePost(), watchListPosts()]);
 }

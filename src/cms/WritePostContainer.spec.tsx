@@ -9,7 +9,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Modal, Result } from "antd";
 import { CreatePostFeedback } from 'src/redux/reducers';
 import { CreatePostResultAction } from 'src/redux/actions/types';
-import { act } from 'react-dom/test-utils';
 
 jest.mock('react-redux');
 

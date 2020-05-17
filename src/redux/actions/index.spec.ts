@@ -1,6 +1,6 @@
-import { CreatePostInput } from "src/API";
-import { CREATE_POST, PostAction } from "./types";
-import { createPost } from ".";
+import { CreatePostInput, ListPostsQueryVariables } from "src/API";
+import { CREATE_POST, PostAction, LIST_POSTS } from "./types";
+import { createPost, listPosts } from ".";
 
 describe('actions', () => {
   it('should create an action to create a post', () => {
@@ -15,5 +15,19 @@ describe('actions', () => {
     };
 
     expect(createPost(post)).toEqual(expectedAction);
+  });
+
+  it('should create an action to list posts', () => {
+    const queryVars: ListPostsQueryVariables = {
+      filter: { title: { contains: 'good title' } },
+      limit: 8
+    };
+
+    const expectedAction: PostAction = {
+      type: LIST_POSTS,
+      payload: queryVars
+    };
+
+    expect(listPosts(queryVars)).toEqual(expectedAction);
   });
 });

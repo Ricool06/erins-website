@@ -1,56 +1,106 @@
-import rootReducer, { State, initialState } from ".";
-import { CreatePostResultAction } from "../actions/types";
+import rootReducer, { CreatePostFeedback, ListPosts, listPostsReducer } from ".";
+import { CreatePostResultAction, ListPostsResultAction, LIST_POSTS_SUCCEEDED, CREATE_POST_RESET_RESULT, CREATE_POST_FAILED, CREATE_POST_SUCCEEDED } from "../actions/types";
 
 describe('reducers', () => {
-  it('should ignore unknown actions', () => {
-    expect(rootReducer(undefined, {type: 'UNKNOWN'})).toEqual(initialState);
-  });
+  describe('Create post', () => {
+    it('it should set the create post result on success', () => {
+      const action: CreatePostResultAction = {
+        type: CREATE_POST_SUCCEEDED
+      };
 
-  it('it should set the create post result on success', () => {
-    const action: CreatePostResultAction = {
-      type: 'CREATE_POST_SUCCEEDED'
-    };
-
-    const expectedState: State = {
-      ...initialState,
-      createPostFeedback: {
+      const expectedState: CreatePostFeedback = {
         status: 'success',
         show: true
-      }
-    }
+      };
 
-    expect(rootReducer(undefined, action)).toEqual(expectedState);
-  });
+      expect(rootReducer(undefined, action).createPostFeedback).toEqual(expectedState);
+    });
 
-  it('it should set the create post result on failure', () => {
-    const action: CreatePostResultAction = {
-      type: 'CREATE_POST_FAILED'
-    };
+    it('it should set the create post result on failure', () => {
+      const action: CreatePostResultAction = {
+        type: CREATE_POST_FAILED
+      };
 
-    const expectedState: State = {
-      ...initialState,
-      createPostFeedback: {
+      const expectedState: CreatePostFeedback = {
         status: 'error',
         show: true
-      }
-    }
+      };
 
-    expect(rootReducer(undefined, action)).toEqual(expectedState);
-  });
+      expect(rootReducer(undefined, action).createPostFeedback)
+        .toEqual(expectedState);
+    });
 
-  it('it should reset the create post result too!', () => {
-    const action: CreatePostResultAction = {
-      type: 'CREATE_POST_RESET_RESULT'
-    };
+    it('should reset the create post result too!', () => {
+      const action: CreatePostResultAction = {
+        type: CREATE_POST_RESET_RESULT
+      };
 
-    const expectedState: State = {
-      ...initialState,
-      createPostFeedback: {
+      const expectedState: CreatePostFeedback = {
         status: 'success',
         show: false
-      }
-    }
+      };
 
-    expect(rootReducer(undefined, action)).toEqual(expectedState);
+      expect(rootReducer(undefined, action).createPostFeedback).toEqual(expectedState);
+    });
+  });
+
+  describe('List posts', () => {
+    it('should set the listed posts on success', () => {
+      const action: ListPostsResultAction = {
+        type: LIST_POSTS_SUCCEEDED,
+        payload: {
+          listPosts: {
+            __typename: 'ModelPostConnection',
+            nextToken: null,
+            startedAt: null,
+            items: [{
+              content: 'content',
+              id: 'id',
+              owner: 'owner',
+              title: 'title',
+              __typename: 'Post',
+              _lastChangedAt: 1234,
+              _version: 1,
+              _deleted: false
+            }]
+          }
+        }
+      };
+
+      expect(rootReducer(undefined, action).listPosts)
+        .toEqual(action.payload.listPosts);
+    });
+
+    it('should append to the listed post items on subsequent successes', () => {
+      const action: ListPostsResultAction = {
+        type: LIST_POSTS_SUCCEEDED,
+        payload: {
+          listPosts: {
+            __typename: 'ModelPostConnection',
+            nextToken: null,
+            startedAt: null,
+            items: [{
+              content: 'content',
+              id: 'id',
+              owner: 'owner',
+              title: 'title',
+              __typename: 'Post',
+              _lastChangedAt: 1234,
+              _version: 1,
+              _deleted: false
+            }]
+          }
+        }
+      };
+
+      const initialState: ListPosts = action.payload.listPosts;
+      const expectedItems = [
+        ...initialState?.items!,
+        ...action.payload.listPosts?.items!
+      ];
+
+      expect(listPostsReducer(initialState, action)?.items)
+        .toEqual(expectedItems);
+    });
   });
 });
