@@ -3,7 +3,7 @@ import { CognitoIdentityServiceProvider } from 'aws-sdk';
 import awsconfig from '../aws-exports';
 import playwright, { BrowserContextOptions, Page } from 'playwright';
 
-const browserPromise = playwright.chromium.launch({
+export const browserPromise = playwright.chromium.launch({
   headless: false,
 });
 

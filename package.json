@@ -28,7 +28,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "e2e": "cp src/aws-exports.js e2e/aws-exports.ts && AWS_SDK_LOAD_CONFIG=true AWS_PROFILE=erins-website-amplify jest ./e2e",
+    "e2e": "cp src/aws-exports.js e2e/aws-exports.ts && AWS_SDK_LOAD_CONFIG=true AWS_PROFILE=erins-website-amplify jest --rootDir ./e2e --setupFilesAfterEnv './setupTests.ts'",
     "eject:dontdothis": "react-scripts eject"
   },
   "eslintConfig": {
