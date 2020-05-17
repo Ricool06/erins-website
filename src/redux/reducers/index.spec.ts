@@ -37,4 +37,20 @@ describe('reducers', () => {
 
     expect(rootReducer(undefined, action)).toEqual(expectedState);
   });
+
+  it('it should reset the create post result too!', () => {
+    const action: CreatePostResultAction = {
+      type: 'CREATE_POST_RESET_RESULT'
+    };
+
+    const expectedState: State = {
+      ...initialState,
+      createPostFeedback: {
+        status: 'success',
+        show: false
+      }
+    }
+
+    expect(rootReducer(undefined, action)).toEqual(expectedState);
+  });
 });

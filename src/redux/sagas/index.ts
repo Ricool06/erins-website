@@ -2,12 +2,15 @@ import { takeLatest, call, all, put } from 'redux-saga/effects';
 import { CREATE_POST, PostAction, CreatePostResultAction } from '../actions/types';
 import * as mutations from 'src/graphql/mutations';
 import { API, graphqlOperation } from 'aws-amplify';
+import awsconfig from '../../aws-exports';
 
+
+API.configure(awsconfig);
 
 export function* createPost(postAction: PostAction) {
   try {
     yield call(
-      API.graphql,
+      [API, 'graphql'],
       graphqlOperation(mutations.createPost, { input: postAction.payload }));
     yield put<CreatePostResultAction>({ type: 'CREATE_POST_SUCCEEDED' });
   }

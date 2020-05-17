@@ -22,15 +22,17 @@ describe('Login', () => {
     await page.goto(baseUrlPlus('/new-post'));
 
     await signInUser(username, password, page);
+    const titleInput = await page.$('input');
     const textArea = await page.$('textarea');
-    const postButton = await page.$('button');
+    const postButton = await page.$('button.ant-btn-primary');
 
+    await titleInput!.type('This is a new title!');
     await textArea!.type('This is a new blog post!');
     await postButton!.click();
 
-    const toast = await page.$('#toast');
+    const toast = await page.waitForSelector('div.ant-result-title');
 
-    expect(toast!.textContent).toContain('Blog post created!');
+    expect(await toast!.innerText()).toContain('Blog posted! 😘');
   });
 
   afterAll(async () => {
@@ -38,6 +40,8 @@ describe('Login', () => {
       UserPoolId: awsconfig.aws_user_pools_id,
       Username: username,
     }).promise();
+
+    await ctx.close();
   });
 });
 

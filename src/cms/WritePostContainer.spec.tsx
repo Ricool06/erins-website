@@ -1,3 +1,4 @@
+import '../../__mocks__/match-media.spec';
 import React from 'react';
 import WritePost from "./WritePost";
 import { shallow, mount } from "enzyme";
@@ -7,6 +8,8 @@ import { CreatePostInput } from 'src/API';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal, Result } from "antd";
 import { CreatePostFeedback } from 'src/redux/reducers';
+import { CreatePostResultAction } from 'src/redux/actions/types';
+import { act } from 'react-dom/test-utils';
 
 jest.mock('react-redux');
 
@@ -21,7 +24,7 @@ describe('WritePostContainer', () => {
     mockUseSelector
       .mockReturnValue({ show: false, status: 'success' });
 
-    const wrapper = mount(<WritePostContainer />);
+    const wrapper = shallow(<WritePostContainer />);
 
     const postWriter = wrapper.find(WritePost);
 
@@ -55,7 +58,7 @@ describe('WritePostContainer', () => {
     mockUseDispatch
       .mockReturnValue(dispatch);
     mockUseSelector
-      .mockImplementation((func) => func({createPostFeedback}));
+      .mockImplementation((func) => func({ createPostFeedback }));
 
     mount(<WritePostContainer />);
 
@@ -74,7 +77,7 @@ describe('WritePostContainer', () => {
     mockUseDispatch
       .mockReturnValue(dispatch);
     mockUseSelector
-      .mockImplementation((func) => func({createPostFeedback}));
+      .mockImplementation((func) => func({ createPostFeedback }));
 
     mount(<WritePostContainer />);
 
@@ -93,10 +96,58 @@ describe('WritePostContainer', () => {
     mockUseDispatch
       .mockReturnValue(dispatch);
     mockUseSelector
-      .mockImplementation((func) => func({createPostFeedback}));
+      .mockImplementation((func) => func({ createPostFeedback }));
 
     mount(<WritePostContainer />);
 
     expect(modalInfoSpy).not.toHaveBeenCalled();
+  });
+
+  it('should dispatch an action to reset the feedback state after showing a modal', () => {
+    const dispatch = jest.fn();
+    const createPostFeedback: CreatePostFeedback = {
+      show: true,
+      status: 'success'
+    };
+    const expectedAction: CreatePostResultAction = {
+      type: 'CREATE_POST_RESET_RESULT'
+    };
+
+    mockUseDispatch
+      .mockReturnValue(dispatch);
+    mockUseSelector
+      .mockImplementation((func) => func({ createPostFeedback }));
+
+    mount(<WritePostContainer />);
+
+    expect(modalInfoSpy).toHaveBeenCalledWith({
+      content: (<Result
+        status={createPostFeedback.status}
+        title='Blog posted! 😘' />),
+      icon: null
+    });
+    expect(dispatch).toHaveBeenCalledWith(expectedAction);
+  });
+
+  it('should disallow new posting while a post is in progress', () => {
+    const dispatch = jest.fn();
+    mockUseDispatch
+      .mockReturnValue(dispatch);
+    mockUseSelector
+      .mockReturnValue({ show: false, status: 'success' });
+
+    const wrapper = shallow(<WritePostContainer />);
+    const getPostWriter = () => wrapper.find(WritePost);
+
+    const expected: CreatePostInput = {
+      title: 'Wow, a blog.',
+      content: 'Hello! I am a blog post.'
+    };
+
+    expect(getPostWriter().props().canPost).toBeTruthy();
+
+    getPostWriter().props().onSubmit(expected);
+
+    expect(getPostWriter().props().canPost).toBeFalsy();
   });
 });

@@ -1,8 +1,9 @@
+import '../../__mocks__/match-media.spec';
 import React from 'react';
 import WritePost from "./WritePost";
 import { shallow, mount } from 'enzyme';
 import { act } from 'react-dom/test-utils';
-import { Button, Input } from 'antd';
+import { Button, Input, Spin } from 'antd';
 import ReactMde from 'react-mde';
 import { Converter, ConverterStatic } from 'showdown';
 import { CreatePostInput } from 'src/API';
@@ -58,17 +59,32 @@ describe('WritePost', () => {
     expect(node?.toString()).toEqual(expectedHtml);
   });
 
-  // it('should store the tab type', () => {
-  //   // const [selectedTab, setSelectedTab] = React.useState<"write" | "preview">(
-  //   //   "write"
-  //   // );
-  //   const wrapper = mount(<WritePost onSubmit={jest.fn()} />);
-  //   const editor = wrapper.find(ReactMde);
+  it('should store the tab type', () => {
+    const wrapper = shallow(<WritePost onSubmit={jest.fn()} />);
+    const getEditor = () => wrapper.find(ReactMde);
 
-  //   expect(wrapper.state('selectedTab')).toEqual('write');
+    expect(getEditor().props().selectedTab).toEqual('write');
 
-  //   editor.props().onTabChange('preview');
+    act(() => {
+      getEditor().props().onTabChange('preview');
+    });
 
-  //   expect(wrapper.state('selectedTab')).toEqual('preview');
-  // });
+    expect(getEditor().props().selectedTab).toEqual('preview');
+  });
+
+  it('should enable the submit button when canPost is true', () => {
+    const wrapper = shallow(<WritePost canPost={true} onSubmit={jest.fn()} />);
+    const button = wrapper.find(Button);
+
+    expect(button.props().disabled).toEqual(false);
+    expect(button.text()).toEqual('Submit Post');
+  });
+
+  it('should disable the submit button when canPost is false', () => {
+    const wrapper = shallow(<WritePost canPost={false} onSubmit={jest.fn()} />);
+    const button = wrapper.find(Button);
+
+    expect(button.props().disabled).toEqual(true);
+    expect(button.find(Spin).exists()).toBeTruthy()
+  });
 });
