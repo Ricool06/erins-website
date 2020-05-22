@@ -1,9 +1,10 @@
-import { takeLatest, call, all, put, takeLeading } from 'redux-saga/effects';
+import { takeLatest, call, all, put, takeLeading, select } from 'redux-saga/effects';
 import { CREATE_POST, PostAction, CreatePostResultAction, LIST_POSTS, ListPostsResultAction, LIST_POSTS_FAILED } from '../actions/types';
 import * as mutations from 'src/graphql/mutations';
 import * as queries from 'src/graphql/queries';
 import { API, graphqlOperation } from 'aws-amplify';
 import awsconfig from '../../aws-exports';
+import { selectNextToken } from '../selectors';
 
 
 API.configure(awsconfig);
@@ -26,14 +27,18 @@ export function* watchCreatePost() {
 
 export function* listPosts(postAction: PostAction) {
   try {
+    const nextToken: string = yield select(selectNextToken);
+
     const { data: listPostsQueryResult } = yield call(
       [API, 'graphql'],
-      graphqlOperation(queries.listPosts, postAction.payload));
+      graphqlOperation(queries.listPosts, { ...postAction.payload, nextToken }));
+
 
     yield put<ListPostsResultAction>(
       { type: 'LIST_POSTS_SUCCEEDED', payload: listPostsQueryResult });
   }
-  catch {
+  catch (e) {
+    console.log(e);
     yield put<ListPostsResultAction>({ type: LIST_POSTS_FAILED });
   }
 }

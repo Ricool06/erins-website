@@ -8,7 +8,7 @@ export const createPost = (payload: CreatePostInput): PostAction => {
   };
 };
 
-export const listPosts = (payload: ListPostsQueryVariables): PostAction => {
+export const listPosts = (payload: Omit<ListPostsQueryVariables, 'nextToken'>): PostAction => {
   return {
     type: LIST_POSTS,
     payload

@@ -1,9 +1,10 @@
 import React from 'react';
-import { AmplifyAuthenticator, AmplifySignUp } from '@aws-amplify/ui-react';
+import { AmplifyAuthenticator } from '@aws-amplify/ui-react';
 import { BrowserRouter as Router, Link, Switch, Route } from 'react-router-dom';
 import WritePostContainer from './cms/WritePostContainer';
 import 'antd/dist/antd.css'
 import { Menu, Layout, Row, Col } from 'antd';
+import PostGridContainer from './blog/PostGridContainer';
 
 function App() {
 
@@ -41,16 +42,18 @@ function App() {
       <Layout.Content>
         <Switch>
           <Route exact path='/'>
+            <PostGridContainer />
           </Route>
 
           <Route exact path='/new-post'>
             <Row justify='space-around'>
               <Col>
                 <AmplifyAuthenticator >
-                  <AmplifySignUp formFields={[
+                  {/* <AmplifySignUp  formFields={[
                     { type: 'email' },
                     { type: 'password' },
-                  ]} usernameAlias='email' slot='sign-up'></AmplifySignUp>
+                  ]} usernameAlias='email' slot='sign-up'></AmplifySignUp> */}
+                  <div slot='sign-up'></div>
                   <WritePostContainer />
                 </AmplifyAuthenticator>
               </Col>

@@ -2,14 +2,22 @@ import { CreatePostInput, ListPostsQueryVariables } from 'src/API';
 import * as mutations from 'src/graphql/mutations';
 import * as queries from 'src/graphql/queries';
 import { createPost, watchCreatePost, rootSaga, listPosts, watchListPosts } from '.';
-import { call, takeLatest, put, all, takeLeading } from 'redux-saga/effects';
+import { call, takeLatest, put, all, takeLeading, select } from 'redux-saga/effects';
 import { CREATE_POST, CreatePostResultAction, LIST_POSTS, ListPostsResultAction, LIST_POSTS_SUCCEEDED, LIST_POSTS_FAILED } from '../actions/types';
 import { API, graphqlOperation } from 'aws-amplify';
-
+import { selectNextToken } from '../selectors';
 
 jest.mock('aws-amplify');
+jest.mock('../selectors');
+
+const realGraphqlOperation = jest.requireActual('aws-amplify').graphqlOperation;
+(graphqlOperation as jest.MockedFunction<typeof graphqlOperation>)
+  .mockImplementation(realGraphqlOperation);
+
+const mockToken = 'next.token.yeah';
 
 describe('sagas', () => {
+
   it('should combine all sagas into a root saga', () => {
     expect(rootSaga().next().value)
       .toEqual(all([watchCreatePost(), watchListPosts()]));
@@ -53,13 +61,20 @@ describe('sagas', () => {
 
   describe('List posts', () => {
     it('should fetch posts from the API', () => {
-      const queryVars: ListPostsQueryVariables = {
-        limit: 6
+      const payload: Omit<ListPostsQueryVariables, 'nextToken'> = {
+        limit: 6,
+      };
+      const fullQueryVars: ListPostsQueryVariables = {
+        ...payload,
+        nextToken: mockToken
       }
-      const generator = listPosts({ type: LIST_POSTS, payload: queryVars });
+
+      const generator = listPosts({ type: LIST_POSTS, payload });
 
       expect(generator.next().value)
-        .toEqual(call([API, 'graphql'], graphqlOperation(queries.listPosts, queryVars)));
+        .toEqual(select(selectNextToken));
+      expect(generator.next(mockToken as any).value)
+        .toEqual(call([API, 'graphql'], graphqlOperation(queries.listPosts, fullQueryVars)));
     });
 
     it('should dispatch a success action after successfully fetching posts', () => {
@@ -90,9 +105,12 @@ describe('sagas', () => {
       const generator = listPosts({ type: LIST_POSTS, payload: queryVars });
 
       expect(generator.next().value)
+        .toEqual(select(selectNextToken));
+
+      expect(generator.next().value)
         .toEqual(call([API, 'graphql'], graphqlOperation(queries.listPosts, queryVars)));
 
-      expect(generator.next({ data: successAction.payload }).value)
+      expect(generator.next({ data: successAction.payload } as any).value)
         .toEqual(put(successAction));
     });
 
@@ -106,7 +124,11 @@ describe('sagas', () => {
       const generator = listPosts({ type: LIST_POSTS, payload: queryVars });
 
       expect(generator.next().value)
+        .toEqual(select(selectNextToken));
+
+      expect(generator.next().value)
         .toEqual(call([API, 'graphql'], graphqlOperation(queries.listPosts, queryVars)));
+
       expect(generator.throw({}).value)
         .toEqual(put(failureAction));
     });
