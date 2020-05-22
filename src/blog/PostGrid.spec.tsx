@@ -1,7 +1,7 @@
 import React from "react";
 import { shallow, mount } from "enzyme";
 import PostGrid from './PostGrid';
-import { Card, List, Button } from "antd";
+import { Card, Button, Col } from "antd";
 import { ListPostsItems } from "src/redux/reducers";
 import '../../__mocks__/match-media.spec';
 
@@ -25,15 +25,23 @@ const copy = Object.assign;
 
 describe('PostGrid', () => {
   it('should display cards representing their containing posts', () => {
+    const wrapper = shallow(<PostGrid posts={[post]} fetchMore={jest.fn()} />);
+
+    const card = wrapper.find(Card);
+    const col = wrapper.find(Col);
+
+    expect(card.props().hoverable).toBeTruthy();
+    expect(col.key()).toEqual(post.id);
+  });
+
+  it('should not display cards when given no posts', () => {
     const wrapper = shallow(<PostGrid posts={[]} fetchMore={jest.fn()} />);
 
-    const list = wrapper.find(List);
+    const card = wrapper.find(Card);
+    const col = wrapper.find(Col);
 
-    expect(list.props().renderItem!(copy(post), 0))
-      .toEqual(
-        <List.Item key={post.id}>
-          <Card loading={false} title={post.title} />
-        </List.Item>);
+    expect(card.exists()).toBeFalsy();
+    expect(col.exists()).toBeFalsy();
   });
 
   it('should fire an event a load event when the load more button is pressed', () => {

@@ -1,6 +1,6 @@
 import { Reducer, combineReducers } from 'redux';
 import { ResultStatusType } from 'antd/lib/result';
-import { CREATE_POST_SUCCEEDED, CREATE_POST_FAILED, LIST_POSTS_SUCCEEDED, CreatePostResultAction, ListPostsResultAction } from '../actions/types';
+import { CREATE_POST_SUCCEEDED, CREATE_POST_FAILED, LIST_POSTS_SUCCEEDED, CreatePostResultAction, SetListPostsStateAction, CLEAR_POSTS } from '../actions/types';
 import { ListPostsQuery } from 'src/API';
 
 const copy = Object.assign;
@@ -45,7 +45,7 @@ const createPostFeedbackReducer: Reducer<CreatePostFeedback, CreatePostResultAct
   }
 };
 
-export const listPostsReducer: Reducer<ListPosts, ListPostsResultAction> = (
+export const listPostsReducer: Reducer<ListPosts, SetListPostsStateAction> = (
   state = initialListPostsState,
   action
 ) => {
@@ -57,7 +57,14 @@ export const listPostsReducer: Reducer<ListPosts, ListPostsResultAction> = (
           ...state?.items ?? [],
           ...action.payload.listPosts?.items ?? []
         ],
-      })
+      });
+    case CLEAR_POSTS:
+      return {
+        __typename: 'ModelPostConnection',
+        items: [],
+        nextToken: null,
+        startedAt: null,
+      };
     default:
       return state;
   }

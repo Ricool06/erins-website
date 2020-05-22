@@ -148,31 +148,6 @@ export type DeletePostMutation = {
   } | null,
 };
 
-export type SyncPostsQueryVariables = {
-  filter?: ModelPostFilterInput | null,
-  limit?: number | null,
-  nextToken?: string | null,
-  lastSync?: number | null,
-};
-
-export type SyncPostsQuery = {
-  syncPosts:  {
-    __typename: "ModelPostConnection",
-    items:  Array< {
-      __typename: "Post",
-      id: string,
-      title: string,
-      content: string | null,
-      _version: number,
-      _deleted: boolean | null,
-      _lastChangedAt: number,
-      owner: string | null,
-    } | null > | null,
-    nextToken: string | null,
-    startedAt: number | null,
-  } | null,
-};
-
 export type GetPostQueryVariables = {
   id: string,
 };
@@ -198,6 +173,31 @@ export type ListPostsQueryVariables = {
 
 export type ListPostsQuery = {
   listPosts:  {
+    __typename: "ModelPostConnection",
+    items:  Array< {
+      __typename: "Post",
+      id: string,
+      title: string,
+      content: string | null,
+      _version: number,
+      _deleted: boolean | null,
+      _lastChangedAt: number,
+      owner: string | null,
+    } | null > | null,
+    nextToken: string | null,
+    startedAt: number | null,
+  } | null,
+};
+
+export type SyncPostsQueryVariables = {
+  filter?: ModelPostFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+  lastSync?: number | null,
+};
+
+export type SyncPostsQuery = {
+  syncPosts:  {
     __typename: "ModelPostConnection",
     items:  Array< {
       __typename: "Post",

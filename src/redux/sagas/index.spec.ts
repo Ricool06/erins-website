@@ -6,6 +6,7 @@ import { call, takeLatest, put, all, takeLeading, select } from 'redux-saga/effe
 import { CREATE_POST, CreatePostResultAction, LIST_POSTS, ListPostsResultAction, LIST_POSTS_SUCCEEDED, LIST_POSTS_FAILED } from '../actions/types';
 import { API, graphqlOperation } from 'aws-amplify';
 import { selectNextToken } from '../selectors';
+import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 
 jest.mock('aws-amplify');
 jest.mock('../selectors');
@@ -74,7 +75,13 @@ describe('sagas', () => {
       expect(generator.next().value)
         .toEqual(select(selectNextToken));
       expect(generator.next(mockToken as any).value)
-        .toEqual(call([API, 'graphql'], graphqlOperation(queries.listPosts, fullQueryVars)));
+        .toEqual(call(
+          [API, 'graphql'],
+          {
+            query: queries.listPosts,
+            authMode: GRAPHQL_AUTH_MODE.API_KEY,
+            variables: fullQueryVars,
+          }));
     });
 
     it('should dispatch a success action after successfully fetching posts', () => {
@@ -108,7 +115,13 @@ describe('sagas', () => {
         .toEqual(select(selectNextToken));
 
       expect(generator.next().value)
-        .toEqual(call([API, 'graphql'], graphqlOperation(queries.listPosts, queryVars)));
+        .toEqual(call(
+          [API, 'graphql'],
+          {
+            query: queries.listPosts,
+            authMode: GRAPHQL_AUTH_MODE.API_KEY,
+            variables: queryVars,
+          }));
 
       expect(generator.next({ data: successAction.payload } as any).value)
         .toEqual(put(successAction));
@@ -127,7 +140,13 @@ describe('sagas', () => {
         .toEqual(select(selectNextToken));
 
       expect(generator.next().value)
-        .toEqual(call([API, 'graphql'], graphqlOperation(queries.listPosts, queryVars)));
+        .toEqual(call(
+          [API, 'graphql'],
+          {
+            query: queries.listPosts,
+            authMode: GRAPHQL_AUTH_MODE.API_KEY,
+            variables: queryVars,
+          }));
 
       expect(generator.throw({}).value)
         .toEqual(put(failureAction));

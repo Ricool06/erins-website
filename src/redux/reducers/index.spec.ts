@@ -1,5 +1,6 @@
 import rootReducer, { CreatePostFeedback, ListPosts, listPostsReducer } from ".";
 import { CreatePostResultAction, ListPostsResultAction, LIST_POSTS_SUCCEEDED, CREATE_POST_RESET_RESULT, CREATE_POST_FAILED, CREATE_POST_SUCCEEDED } from "../actions/types";
+import { clearPosts } from "../actions";
 
 describe('reducers', () => {
   describe('Create post', () => {
@@ -102,5 +103,30 @@ describe('reducers', () => {
       expect(listPostsReducer(initialState, action)?.items)
         .toEqual(expectedItems);
     });
+
+    it('should remove all posts from the state when receiving a clear posts action', () => {
+      const initialState: ListPosts = {
+        __typename: 'ModelPostConnection',
+        nextToken: 'some.token',
+        startedAt: null,
+        items: [{
+          content: 'content',
+          id: 'id',
+          owner: 'owner',
+          title: 'title',
+          __typename: 'Post',
+          _lastChangedAt: 1234,
+          _version: 1,
+          _deleted: false
+        }]
+      };
+
+      const newState = listPostsReducer(initialState, clearPosts());
+
+      expect(newState?.items).toEqual([]);
+      expect(newState?.nextToken).toEqual(null);
+      expect(newState?.startedAt).toEqual(null);
+    });
   });
+
 });

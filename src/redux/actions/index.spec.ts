@@ -1,6 +1,6 @@
 import { CreatePostInput, ListPostsQueryVariables } from "src/API";
-import { CREATE_POST, PostAction, LIST_POSTS } from "./types";
-import { createPost, listPosts } from ".";
+import { CREATE_POST, PostAction, LIST_POSTS, CLEAR_POSTS, SetListPostsStateAction } from "./types";
+import { createPost, listPosts, clearPosts } from ".";
 
 describe('actions', () => {
   it('should create an action to create a post', () => {
@@ -29,5 +29,13 @@ describe('actions', () => {
     };
 
     expect(listPosts(queryVars)).toEqual(expectedAction);
+  });
+
+  it('should create an action to clear posts', () => {
+    const expectedAction: SetListPostsStateAction = {
+      type: CLEAR_POSTS
+    };
+
+    expect(clearPosts()).toEqual(expectedAction);
   });
 });

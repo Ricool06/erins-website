@@ -1,4 +1,6 @@
 {
+    "identityPoolName": "erinswebsite932fe9b0932fe9b0_identitypool_59a43519",
+    "allowUnauthenticatedIdentities": true,
     "resourceNameTruncated": "erinsw932fe9b0",
     "userPoolName": "erinswebsite932fe9b0_userpool_932fe9b0",
     "autoVerifiedAttributes": [
@@ -10,7 +12,7 @@
     ],
     "smsAuthenticationMessage": "Your authentication code is {####}",
     "smsVerificationMessage": "Your verification code is {####}",
-    "emailVerificationSubject": "Your verification code",
+    "emailVerificationSubject": "Erin's Blog verification code",
     "emailVerificationMessage": "Your verification code is {####}",
     "defaultPasswordPolicy": false,
     "passwordPolicyMinLength": 8,
@@ -29,16 +31,19 @@
     "userpoolClientLambdaRole": "erinsw932fe9b0_userpoolclient_lambda_role",
     "userpoolClientSetAttributes": false,
     "useDefault": "manual",
-    "authSelections": "userPoolOnly",
+    "authSelections": "identityPoolAndUserPool",
     "resourceName": "erinswebsite932fe9b0932fe9b0",
     "usernameAttributes": [
         "email"
     ],
-    "userPoolGroups": false,
+    "userPoolGroups": true,
     "adminQueries": false,
     "triggers": "{}",
     "hostedUI": false,
-    "userPoolGroupList": [],
+    "userPoolGroupList": [
+        "reader",
+        "author"
+    ],
     "authRoleArn": {
         "Fn::GetAtt": [
             "AuthRole",
@@ -55,5 +60,6 @@
         "Ref": "AWS::StackId"
     },
     "permissions": [],
-    "dependsOn": []
+    "dependsOn": [],
+    "thirdPartyAuth": false
 }

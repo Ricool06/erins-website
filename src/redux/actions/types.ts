@@ -55,3 +55,11 @@ interface ListPostsFailed extends Action<string> {
 export type ListPostsResultAction =
   ListPostsSucceeded |
   ListPostsFailed;
+
+export const CLEAR_POSTS = 'CLEAR_POSTS';
+
+interface ClearPostsAction extends Action<string> {
+  type: typeof CLEAR_POSTS,
+}
+
+export type SetListPostsStateAction = ClearPostsAction | ListPostsResultAction;

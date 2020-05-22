@@ -4,7 +4,7 @@ import PostGridContainer from "./PostGridContainer";
 import { useSelector, useDispatch } from "react-redux";
 import { ListPostsItems, RootState } from "src/redux/reducers";
 import PostGrid from "./PostGrid";
-import { listPosts } from "src/redux/actions";
+import { listPosts, clearPosts } from "src/redux/actions";
 import '../../__mocks__/match-media.spec'
 
 const postItems: ListPostsItems = [
@@ -57,5 +57,15 @@ describe('PostGridContainer', () => {
     
     expect(dispatch).toHaveBeenNthCalledWith(1, action);
     expect(dispatch).toHaveBeenNthCalledWith(2, action);
+  });
+
+  it('should clear the posts on unmount', () => {
+    const dispatch = jest.fn();
+    mockUseDispatch.mockReturnValue(dispatch);
+
+    const wrapper = mount(<PostGridContainer />);
+    wrapper.unmount();
+
+    expect(dispatch).toHaveBeenCalledWith(clearPosts());
   });
 });

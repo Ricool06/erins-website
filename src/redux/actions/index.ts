@@ -1,5 +1,5 @@
 import { CreatePostInput, ListPostsQueryVariables } from "src/API";
-import { PostAction, CREATE_POST, LIST_POSTS } from "./types";
+import { PostAction, CREATE_POST, LIST_POSTS, CLEAR_POSTS, SetListPostsStateAction } from "./types";
 
 export const createPost = (payload: CreatePostInput): PostAction => {
   return {
@@ -14,3 +14,9 @@ export const listPosts = (payload: Omit<ListPostsQueryVariables, 'nextToken'>): 
     payload
   };
 }
+
+export const clearPosts = (): SetListPostsStateAction => {
+  return {
+    type: CLEAR_POSTS,
+  };
+};
