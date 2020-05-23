@@ -2,7 +2,7 @@ import React, { FC, useEffect } from 'react';
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, ListPostsItems } from "src/redux/reducers";
 import PostGrid from "./PostGrid";
-import { listPosts, clearPosts } from 'src/redux/actions';
+import { listPosts } from 'src/redux/actions';
 
 const PostGridContainer: FC = () => {
   const dispatch = useDispatch();
@@ -15,8 +15,9 @@ const PostGridContainer: FC = () => {
   }
 
   const initEffect = () => {
-    fetchMore();
-    return () => { dispatch(clearPosts()) };
+    if ((postItems?.length ?? 0) < 1) {
+      fetchMore();
+    }
   }
 
   useEffect(initEffect, []);

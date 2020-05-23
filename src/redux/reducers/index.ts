@@ -12,6 +12,7 @@ export interface CreatePostFeedback {
 
 export type ListPosts = ListPostsQuery['listPosts'];
 export type ListPostsItems = NonNullable<ListPosts>['items'];
+export type Post = NonNullable<ListPostsItems>[number];
 
 export const initialCreatePostFeedbackState: CreatePostFeedback = {
   status: 'success',

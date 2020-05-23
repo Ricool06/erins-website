@@ -1,6 +1,6 @@
 import { CreatePostInput, ListPostsQueryVariables } from "src/API";
-import { CREATE_POST, PostAction, LIST_POSTS, CLEAR_POSTS, SetListPostsStateAction } from "./types";
-import { createPost, listPosts, clearPosts } from ".";
+import { CREATE_POST, PostAction, LIST_POSTS, CLEAR_POSTS, SetListPostsStateAction, FetchPostAction, FETCH_POST } from "./types";
+import { createPost, listPosts, clearPosts, fetchPost } from ".";
 
 describe('actions', () => {
   it('should create an action to create a post', () => {
@@ -37,5 +37,16 @@ describe('actions', () => {
     };
 
     expect(clearPosts()).toEqual(expectedAction);
+  });
+
+  it('should create an action to fetch a single post by ID', () => {
+    const id = 'some.id';
+
+    const expectedAction: FetchPostAction = {
+      type: FETCH_POST,
+      id
+    };
+
+    expect(fetchPost(id)).toEqual(expectedAction);
   });
 });

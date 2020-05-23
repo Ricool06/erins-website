@@ -4,7 +4,7 @@ import PostGridContainer from "./PostGridContainer";
 import { useSelector, useDispatch } from "react-redux";
 import { ListPostsItems, RootState } from "src/redux/reducers";
 import PostGrid from "./PostGrid";
-import { listPosts, clearPosts } from "src/redux/actions";
+import { listPosts } from "src/redux/actions";
 import '../../__mocks__/match-media.spec'
 
 const postItems: ListPostsItems = [
@@ -35,7 +35,7 @@ describe('PostGridContainer', () => {
     expect(grid.props().posts).toEqual(postItems);
   });
 
-  it('should fetch the next six posts after scrolling to the bottom', () => {
+  it('should fetch the next six posts when the grid calls fetchMore', () => {
     const mockState: Partial<RootState> = {
       listPosts: {
         items: postItems,
@@ -55,17 +55,40 @@ describe('PostGridContainer', () => {
     
     grid.props().fetchMore();
     
-    expect(dispatch).toHaveBeenNthCalledWith(1, action);
-    expect(dispatch).toHaveBeenNthCalledWith(2, action);
+    expect(dispatch).toHaveBeenCalledWith(action);
+    expect(dispatch).toHaveBeenCalledTimes(1);
   });
 
-  it('should clear the posts on unmount', () => {
+  it('should only fetch posts without user interaction if there are no posts', () => {
+    const firstMockState: Partial<RootState> = {
+      listPosts: {
+        items: [],
+        nextToken: null,
+        startedAt: null,
+        __typename: 'ModelPostConnection',
+      }
+    };
+
+    const secondMockState: Partial<RootState> = {
+      listPosts: {
+        items: postItems,
+        nextToken: null,
+        startedAt: null,
+        __typename: 'ModelPostConnection',
+      }
+    };
+
     const dispatch = jest.fn();
     mockUseDispatch.mockReturnValue(dispatch);
+    mockUseSelector
+      .mockImplementationOnce(selector => selector(firstMockState))
+      .mockImplementation(selector => selector(secondMockState));
 
     const wrapper = mount(<PostGridContainer />);
     wrapper.unmount();
+    wrapper.mount();
 
-    expect(dispatch).toHaveBeenCalledWith(clearPosts());
+    expect(dispatch).toHaveBeenCalledWith(listPosts({limit: 6}));
+    expect(dispatch).toHaveBeenCalledTimes(1);
   });
 });

@@ -1,11 +1,12 @@
 import { takeLatest, call, all, put, takeLeading, select } from 'redux-saga/effects';
-import { CREATE_POST, PostAction, CreatePostResultAction, LIST_POSTS, ListPostsResultAction, LIST_POSTS_FAILED } from '../actions/types';
+import { CREATE_POST, PostAction, CreatePostResultAction, LIST_POSTS, ListPostsResultAction, LIST_POSTS_FAILED, FetchPostAction, FetchPostResultAction, FETCH_POST_SUCCEEDED, FETCH_POST_FAILED, FETCH_POST } from '../actions/types';
 import * as mutations from 'src/graphql/mutations';
 import * as queries from 'src/graphql/queries';
 import { API, graphqlOperation } from 'aws-amplify';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import awsconfig from '../../aws-exports';
-import { selectNextToken } from '../selectors';
+import { selectNextToken, selectPost } from '../selectors';
+import { Post } from '../reducers';
 
 API.configure(awsconfig);
 
@@ -50,6 +51,31 @@ export function* watchListPosts() {
   yield takeLeading(LIST_POSTS, listPosts);
 }
 
+export function* watchFetchPost() {
+  yield takeLatest(FETCH_POST, fetchPost);
+}
+
+export function* fetchPost(action: FetchPostAction) {
+  try {
+    let post: Post = yield select(selectPost, action.id);
+
+    if (!post) {
+      post = yield call(
+        [API, 'graphql'],
+        {
+          query: queries.getPost,
+          authMode: GRAPHQL_AUTH_MODE.API_KEY,
+          variables: { id: action.id },
+        });
+    }
+
+    yield put<FetchPostResultAction>({ type: FETCH_POST_SUCCEEDED, payload: post });
+  }
+  catch {
+    yield put<FetchPostResultAction>({ type: FETCH_POST_FAILED });
+  }
+}
+
 export function* rootSaga() {
-  yield all([watchCreatePost(), watchListPosts()]);
+  yield all([watchCreatePost(), watchListPosts(), watchFetchPost()]);
 }

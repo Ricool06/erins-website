@@ -26,7 +26,7 @@ function App() {
 
         </Col>
         <Col span={16}>
-          <h2 style={{ padding: '0 1rem' }}>Erin</h2>
+          <h2 style={{ padding: '0 1rem' }}>erin crocker</h2>
         </Col>
         <Col md={4} span={4}>
           {navMenu}

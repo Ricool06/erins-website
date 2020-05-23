@@ -1,12 +1,13 @@
-import { CreatePostInput, ListPostsQueryVariables } from 'src/API';
+import { CreatePostInput, ListPostsQueryVariables, GetPostQueryVariables } from 'src/API';
 import * as mutations from 'src/graphql/mutations';
 import * as queries from 'src/graphql/queries';
-import { createPost, watchCreatePost, rootSaga, listPosts, watchListPosts } from '.';
+import { createPost, watchCreatePost, rootSaga, listPosts, watchListPosts, fetchPost, watchFetchPost } from '.';
 import { call, takeLatest, put, all, takeLeading, select } from 'redux-saga/effects';
-import { CREATE_POST, CreatePostResultAction, LIST_POSTS, ListPostsResultAction, LIST_POSTS_SUCCEEDED, LIST_POSTS_FAILED } from '../actions/types';
+import { CREATE_POST, CreatePostResultAction, LIST_POSTS, ListPostsResultAction, LIST_POSTS_SUCCEEDED, LIST_POSTS_FAILED, FETCH_POST, FetchPostResultAction, FETCH_POST_SUCCEEDED, FETCH_POST_FAILED } from '../actions/types';
 import { API, graphqlOperation } from 'aws-amplify';
-import { selectNextToken } from '../selectors';
+import { selectNextToken, selectPost } from '../selectors';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import { Post } from '../reducers';
 
 jest.mock('aws-amplify');
 jest.mock('../selectors');
@@ -21,7 +22,7 @@ describe('sagas', () => {
 
   it('should combine all sagas into a root saga', () => {
     expect(rootSaga().next().value)
-      .toEqual(all([watchCreatePost(), watchListPosts()]));
+      .toEqual(all([watchCreatePost(), watchListPosts(), watchFetchPost()]));
   });
 
   describe('Create post', () => {
@@ -57,6 +58,92 @@ describe('sagas', () => {
       const generator = watchCreatePost();
 
       expect(generator.next().value).toEqual(takeLatest(CREATE_POST, createPost));
+    });
+  });
+
+  describe('Fetch post', () => {
+    it('should fetch a single post from the state', () => {
+      const id = 'some.id';
+      const expectedPost: Post = {
+        __typename: 'Post',
+        _lastChangedAt: 1234,
+        _version: 1,
+        content: 'content',
+        id,
+        owner: 'author',
+        title: 'the great tale of sharky the goldfish',
+        _deleted: false
+      };
+      const generator = fetchPost({ type: FETCH_POST, id });
+
+      expect(generator.next().value)
+        .toEqual(select(selectPost, id));
+      expect(generator.next(expectedPost).value)
+        .toEqual(put<FetchPostResultAction>({
+          payload: expectedPost,
+          type: FETCH_POST_SUCCEEDED
+        }));
+    });
+
+    it('should fetch a single post from the api if it could not be found in the state', () => {
+      const id = 'some.id';
+      const expectedPost: Post = {
+        __typename: 'Post',
+        _lastChangedAt: 1234,
+        _version: 1,
+        content: 'content',
+        id,
+        owner: 'author',
+        title: 'the great tale of sharky the goldfish',
+        _deleted: false
+      };
+      const queryVars: GetPostQueryVariables = { id };
+
+      const generator = fetchPost({ type: FETCH_POST, id });
+
+      expect(generator.next().value)
+        .toEqual(select(selectPost, id));
+      expect(generator.next(undefined as any).value)
+        .toEqual(call(
+          [API, 'graphql'],
+          {
+            query: queries.getPost,
+            authMode: GRAPHQL_AUTH_MODE.API_KEY,
+            variables: queryVars,
+          }));
+      expect(generator.next(expectedPost).value)
+        .toEqual(put<FetchPostResultAction>({
+          payload: expectedPost,
+          type: FETCH_POST_SUCCEEDED
+        }));
+    });
+
+    it('should dispatch a failure action if the post cannot be found', () => {
+      const id = 'some.id';
+      const queryVars: GetPostQueryVariables = { id };
+
+      const generator = fetchPost({ type: FETCH_POST, id });
+
+      expect(generator.next().value)
+        .toEqual(select(selectPost, id));
+      expect(generator.next(undefined as any).value)
+        .toEqual(call(
+          [API, 'graphql'],
+          {
+            query: queries.getPost,
+            authMode: GRAPHQL_AUTH_MODE.API_KEY,
+            variables: queryVars,
+          }));
+      expect(generator.throw({}).value)
+        .toEqual(put<FetchPostResultAction>({
+          type: FETCH_POST_FAILED
+        }));
+    });
+
+    it('should take the latest fetch post action, cancelling prior actions', () => {
+      const generator = watchFetchPost();
+
+      expect(generator.next().value).toEqual(takeLatest(FETCH_POST, fetchPost));
     });
   });
 
