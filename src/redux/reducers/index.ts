@@ -1,6 +1,6 @@
 import { Reducer, combineReducers } from 'redux';
 import { ResultStatusType } from 'antd/lib/result';
-import { CREATE_POST_SUCCEEDED, CREATE_POST_FAILED, LIST_POSTS_SUCCEEDED, CreatePostResultAction, SetListPostsStateAction, CLEAR_POSTS } from '../actions/types';
+import { CREATE_POST_SUCCEEDED, CREATE_POST_FAILED, LIST_POSTS_SUCCEEDED, CreatePostResultAction, SetListPostsStateAction, CLEAR_POSTS, FetchPostResultAction, FETCH_POST_SUCCEEDED, FETCH_POST_FAILED } from '../actions/types';
 import { ListPostsQuery } from 'src/API';
 
 const copy = Object.assign;
@@ -24,7 +24,7 @@ export const initialListPostsState: ListPosts = {
   items: [],
   nextToken: null,
   startedAt: null
-}
+};
 
 const createPostFeedbackReducer: Reducer<CreatePostFeedback, CreatePostResultAction> = (
   state = initialCreatePostFeedbackState,
@@ -69,11 +69,26 @@ export const listPostsReducer: Reducer<ListPosts, SetListPostsStateAction> = (
     default:
       return state;
   }
+};
+
+export const fetchPostReducer: Reducer<Post | null, FetchPostResultAction> = (
+  state = null,
+  action
+) => {
+  switch (action.type) {
+    case FETCH_POST_SUCCEEDED:
+      return action.payload ?? null;
+    case FETCH_POST_FAILED:
+      return null;
+    default:
+      return state;
+  }
 }
 
 const rootReducer = combineReducers({
   createPostFeedback: createPostFeedbackReducer,
-  listPosts: listPostsReducer
+  listPosts: listPostsReducer,
+  currentPost: fetchPostReducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

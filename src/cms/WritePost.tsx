@@ -2,20 +2,13 @@ import React, { FC, useState } from 'react';
 import ReactMde from 'react-mde';
 import { Button, Input, Form, PageHeader, Spin } from 'antd';
 import 'react-mde/lib/styles/css/react-mde-all.css';
-import showdown from 'showdown';
 import { CreatePostInput } from 'src/API';
+import { markdownConverter } from 'src/services';
 
 interface IWritePostProps {
   onSubmit: (post: CreatePostInput) => void;
   canPost?: boolean;
 }
-
-const markdownConverter = new showdown.Converter({
-  tables: true,
-  simplifiedAutoLink: true,
-  strikethrough: true,
-  tasklists: true
-});
 
 const WritePost: FC<IWritePostProps> = ({ onSubmit, canPost = true }) => {
   const [post, queuePostUpdate] = useState<CreatePostInput>({

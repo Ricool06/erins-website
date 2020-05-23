@@ -1,5 +1,5 @@
-import rootReducer, { CreatePostFeedback, ListPosts, listPostsReducer } from ".";
-import { CreatePostResultAction, ListPostsResultAction, LIST_POSTS_SUCCEEDED, CREATE_POST_RESET_RESULT, CREATE_POST_FAILED, CREATE_POST_SUCCEEDED } from "../actions/types";
+import rootReducer, { CreatePostFeedback, ListPosts, listPostsReducer, Post, RootState } from ".";
+import { CreatePostResultAction, ListPostsResultAction, LIST_POSTS_SUCCEEDED, CREATE_POST_RESET_RESULT, CREATE_POST_FAILED, CREATE_POST_SUCCEEDED, FetchPostResultAction, FETCH_POST_SUCCEEDED, FETCH_POST_FAILED } from "../actions/types";
 import { clearPosts } from "../actions";
 
 describe('reducers', () => {
@@ -42,6 +42,46 @@ describe('reducers', () => {
       };
 
       expect(rootReducer(undefined, action).createPostFeedback).toEqual(expectedState);
+    });
+  });
+
+  describe('Fetch post', () => {
+    it('should set the selected post on success', () => {
+      const action: FetchPostResultAction = {
+        type: FETCH_POST_SUCCEEDED,
+        payload: {
+          __typename: 'Post',
+          _deleted: false,
+          _lastChangedAt: 1234,
+          _version: 1,
+          content: 'content',
+          id: 'id',
+          owner: 'author',
+          title: 'title',
+        }
+      };
+
+      expect(rootReducer(undefined, action).currentPost)
+        .toEqual(action.payload);
+    });
+
+    it('should set the selected post to null on failure', () => {
+      const action: FetchPostResultAction = {
+        type: FETCH_POST_FAILED,
+      };
+      const currentPost: Post = {
+        __typename: 'Post',
+        _deleted: false,
+        _lastChangedAt: 1234,
+        _version: 1,
+        content: 'content',
+        id: 'id',
+        owner: 'author',
+        title: 'title',
+      };
+
+      expect(rootReducer({ currentPost } as RootState, action).currentPost)
+        .toEqual(null);
     });
   });
 
