@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { shallow, mount } from "enzyme";
 import PostGridContainer from "./PostGridContainer";
 import { useSelector, useDispatch } from "react-redux";
@@ -21,6 +21,9 @@ const postItems: ListPostsItems = [
 ];
 
 jest.mock('react-redux');
+jest.mock('react-router-dom', () => ({
+  Link: ({ children }: { children: ReactNode }) => (<div>{children}</div>)
+}));
 
 const mockUseSelector = (useSelector as jest.MockedFunction<typeof useSelector>);
 const mockUseDispatch = (useDispatch as jest.MockedFunction<typeof useDispatch>);

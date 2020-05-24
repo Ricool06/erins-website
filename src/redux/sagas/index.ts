@@ -60,13 +60,15 @@ export function* fetchPost(action: FetchPostAction) {
     let post: Post = yield select(selectPost, action.id);
 
     if (!post) {
-      post = yield call(
+      const { data: { getPost } } = yield call(
         [API, 'graphql'],
         {
           query: queries.getPost,
           authMode: GRAPHQL_AUTH_MODE.API_KEY,
           variables: { id: action.id },
         });
+
+      post = getPost;
     }
 
     yield put<FetchPostResultAction>({ type: FETCH_POST_SUCCEEDED, payload: post });

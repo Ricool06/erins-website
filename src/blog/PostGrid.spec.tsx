@@ -1,9 +1,10 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { shallow, mount } from "enzyme";
 import PostGrid from './PostGrid';
 import { Card, Button, Col } from "antd";
 import { ListPostsItems } from "src/redux/reducers";
 import '../../__mocks__/match-media.spec';
+import { Link } from "react-router-dom";
 
 const postItems: ListPostsItems = [
   {
@@ -19,9 +20,10 @@ const postItems: ListPostsItems = [
 ];
 
 const post = postItems[0]!;
-type Post = typeof postItems[0];
 
-const copy = Object.assign;
+jest.mock('react-router-dom', () => ({
+  Link: ({ children }: { children: ReactNode }) => (<div>{children}</div>)
+}));
 
 describe('PostGrid', () => {
   it('should display cards representing their containing posts', () => {
@@ -53,5 +55,13 @@ describe('PostGrid', () => {
     loadMoreButton.simulate('click');
 
     expect(fetchMore).toHaveBeenCalled();
+  });
+
+  it('should make each card link to its post view', () => {
+    const wrapper = shallow(<PostGrid posts={[post]} fetchMore={jest.fn()} />);
+
+    const link = wrapper.find(Link);
+
+    expect(link.props().to).toEqual(`/post/${post.id}`);
   });
 });

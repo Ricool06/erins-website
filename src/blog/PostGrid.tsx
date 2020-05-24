@@ -1,11 +1,12 @@
 import React, { FC } from 'react';
 import { ListPostsItems } from 'src/redux/reducers';
 import { Card, Button, Row, Col, Empty } from 'antd';
+import { Link } from 'react-router-dom';
 
 export interface IPostGridProps {
   posts: ListPostsItems,
   fetchMore: () => any
-}
+};
 
 const PostGrid: FC<IPostGridProps> = ({ posts, fetchMore }) => {
   const determineSpan = (index: number) => {
@@ -20,12 +21,14 @@ const PostGrid: FC<IPostGridProps> = ({ posts, fetchMore }) => {
         style={{ paddingTop: '1rem' }}
         span={24}
       >
-        <Card
-          hoverable
-          cover={<Empty description={false} />}
-          loading={false}
-          title={post?.title}
-        ></Card>
+        <Link to={`/post/${post?.id}`}>
+          <Card
+            hoverable
+            cover={<Empty description={false} />}
+            loading={false}
+            title={post?.title}
+          ></Card>
+        </Link>
       </Col>
     ));
 

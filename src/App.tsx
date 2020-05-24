@@ -5,6 +5,7 @@ import WritePostContainer from './cms/WritePostContainer';
 import 'antd/dist/antd.css'
 import { Menu, Layout, Row, Col } from 'antd';
 import PostGridContainer from './blog/PostGridContainer';
+import PostViewContainer from './blog/PostViewContainer';
 
 function App() {
 
@@ -58,6 +59,10 @@ function App() {
                 </AmplifyAuthenticator>
               </Col>
             </Row>
+          </Route>
+
+          <Route path='/post/:postId'>
+            <PostViewContainer />
           </Route>
 
         </Switch>

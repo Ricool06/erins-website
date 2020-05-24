@@ -78,7 +78,7 @@ describe('sagas', () => {
 
       expect(generator.next().value)
         .toEqual(select(selectPost, id));
-      expect(generator.next(expectedPost).value)
+      expect(generator.next(expectedPost as any).value)
         .toEqual(put<FetchPostResultAction>({
           payload: expectedPost,
           type: FETCH_POST_SUCCEEDED
@@ -99,6 +99,8 @@ describe('sagas', () => {
       };
       const queryVars: GetPostQueryVariables = { id };
 
+      const apiResult = { data: { getPost: expectedPost } };
+
       const generator = fetchPost({ type: FETCH_POST, id });
 
       expect(generator.next().value)
@@ -111,7 +113,7 @@ describe('sagas', () => {
             authMode: GRAPHQL_AUTH_MODE.API_KEY,
             variables: queryVars,
           }));
-      expect(generator.next(expectedPost).value)
+      expect(generator.next(apiResult as any).value)
         .toEqual(put<FetchPostResultAction>({
           payload: expectedPost,
           type: FETCH_POST_SUCCEEDED
