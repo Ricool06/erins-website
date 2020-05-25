@@ -3,10 +3,11 @@ import React from 'react';
 import WritePost from "./WritePost";
 import { shallow, mount } from 'enzyme';
 import { act } from 'react-dom/test-utils';
-import { Button, Input, Spin } from 'antd';
+import { Button, Input, Spin, Upload } from 'antd';
 import ReactMde from 'react-mde';
 import { Converter, ConverterStatic } from 'showdown';
-import { CreatePostInput } from 'src/API';
+import { CreatePostActionPayload } from 'src/redux/actions/types';
+import { RcFile } from 'antd/lib/upload/interface';
 
 jest.mock('showdown');
 
@@ -25,15 +26,25 @@ describe('WritePost', () => {
     const editor = wrapper.find(ReactMde);
     const titleInput = wrapper.find(Input);
     const submitButton = wrapper.find(Button);
+    const coverPhotoUploader = wrapper.find(Upload);
 
-    const expected: CreatePostInput = {
+    const coverPhotoFile: Partial<RcFile> = {
+      name: 'photo.jpg',
+      size: 1234,
+      type: 'image/jpg',
+      uid: 'fileUid'
+    };
+
+    const expected: CreatePostActionPayload = {
       title: 'Wow, a blog.',
-      content: 'Hello! I am a blog post.'
+      content: 'Hello! I am a blog post.',
+      coverPhotoFile: coverPhotoFile as RcFile
     };
 
     act(() => {
       editor.props().onChange(expected.content!);
       titleInput.simulate('change', { target: { value: expected.title }});
+      coverPhotoUploader.props().beforeUpload!(coverPhotoFile as RcFile, []);
       submitButton.simulate('click');
     });
 

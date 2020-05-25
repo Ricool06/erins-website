@@ -11,6 +11,7 @@ export const createPost = /* GraphQL */ `
       id
       title
       content
+      coverPhotoKey
       _version
       _deleted
       _lastChangedAt
@@ -27,6 +28,7 @@ export const updatePost = /* GraphQL */ `
       id
       title
       content
+      coverPhotoKey
       _version
       _deleted
       _lastChangedAt
@@ -43,6 +45,7 @@ export const deletePost = /* GraphQL */ `
       id
       title
       content
+      coverPhotoKey
       _version
       _deleted
       _lastChangedAt

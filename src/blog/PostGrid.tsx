@@ -26,8 +26,7 @@ const PostGrid: FC<IPostGridProps> = ({ posts, fetchMore }) => {
             hoverable
             cover={<Empty description={false} />}
             loading={false}
-            title={post?.title}
-          ></Card>
+          ><Card.Meta title={post?.title} /></Card>
         </Link>
       </Col>
     ));
@@ -38,7 +37,9 @@ const PostGrid: FC<IPostGridProps> = ({ posts, fetchMore }) => {
         {cards}
       </Row>
       <Row justify='space-around'>
+        <Col>
         <Button onClick={fetchMore} >Load More</Button>
+        </Col>
       </Row>
     </>
   );

@@ -1,7 +1,7 @@
-import { CreatePostInput, ListPostsQueryVariables } from "src/API";
-import { PostAction, CREATE_POST, LIST_POSTS, CLEAR_POSTS, SetListPostsStateAction, FetchPostAction, FETCH_POST } from "./types";
+import { ListPostsQueryVariables } from "src/API";
+import { PostAction, CREATE_POST, LIST_POSTS, CLEAR_POSTS, SetListPostsStateAction, FetchPostAction, FETCH_POST, CreatePostActionPayload } from "./types";
 
-export const createPost = (payload: CreatePostInput): PostAction => {
+export const createPost = (payload: CreatePostActionPayload): PostAction => {
   return {
     type: CREATE_POST,
     payload

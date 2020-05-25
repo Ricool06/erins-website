@@ -1,20 +1,21 @@
 import React from 'react';
 import { AmplifyAuthenticator } from '@aws-amplify/ui-react';
-import { BrowserRouter as Router, Link, Switch, Route } from 'react-router-dom';
+import { Link, Switch, Route, useLocation } from 'react-router-dom';
 import WritePostContainer from './cms/WritePostContainer';
 import 'antd/dist/antd.css'
-import { Menu, Layout, Row, Col } from 'antd';
+import { Menu, Layout, Row, Col, Typography } from 'antd';
 import PostGridContainer from './blog/PostGridContainer';
 import PostViewContainer from './blog/PostViewContainer';
 
 function App() {
+  const location = useLocation();
 
   const navMenu = (
-    <Menu mode='horizontal'>
-      <Menu.Item>
+    <Menu selectedKeys={[location.pathname]} mode='horizontal'>
+      <Menu.Item key='/'>
         <Link to='/'>Blog</Link>
       </Menu.Item>
-      <Menu.Item>
+      <Menu.Item key='/new-post'>
         <Link to='/new-post'>New Post</Link>
       </Menu.Item>
     </Menu>
@@ -23,13 +24,17 @@ function App() {
   const desktopHeader = (
     <header>
       <Row justify='space-between' align='bottom'>
-        <Col md={4} span={0}>
+        <Col sm={4} span={0}>
 
         </Col>
         <Col span={16}>
-          <h2 style={{ padding: '0 1rem' }}>erin crocker</h2>
+          <Link to='/'>
+            <Typography.Title level={2} style={{ padding: '0 1rem' }}>
+              erin crocker
+          </Typography.Title>
+          </Link>
         </Col>
-        <Col md={4} span={4}>
+        <Col sm={4} span={4}>
           {navMenu}
         </Col>
       </Row>
@@ -37,8 +42,7 @@ function App() {
   );
 
   return (
-    // <Layout>
-    <Router>
+    <>
       {desktopHeader}
       <Layout.Content>
         <Switch>
@@ -68,10 +72,10 @@ function App() {
         </Switch>
       </Layout.Content>
       <Layout.Footer>
-        Created by Ryan Perry
-        </Layout.Footer>
-    </Router>
-    // </Layout>
+        <Typography.Paragraph>©2020 Erin Crocker</Typography.Paragraph>
+        <a href='https://www.ricool.uk'>Designed and developed by Ryan Perry</a>
+      </Layout.Footer>
+    </>
   );
 }
 

@@ -1,11 +1,10 @@
 import React, { FC, useEffect, useState } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import WritePost from "./WritePost";
-import { CreatePostInput } from "src/API";
 import { createPost } from "src/redux/actions";
 import { CreatePostFeedback, RootState } from "src/redux/reducers";
 import { Modal, Result } from "antd";
-import { CreatePostResultAction } from "src/redux/actions/types";
+import { CreatePostResultAction, CreatePostActionPayload } from "src/redux/actions/types";
 
 const resetFeedback: CreatePostResultAction = {
   type: 'CREATE_POST_RESET_RESULT'
@@ -13,7 +12,7 @@ const resetFeedback: CreatePostResultAction = {
 
 const WritePostContainer: FC = () => {
   const dispatch = useDispatch();
-  const onSubmit = (post: CreatePostInput) => {
+  const onSubmit = (post: CreatePostActionPayload) => {
     setCanPost(false);
     dispatch(createPost(post));
   }

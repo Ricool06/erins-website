@@ -1,13 +1,16 @@
 import { CreatePostInput, ListPostsQueryVariables, ListPostsQuery } from "src/API";
 import { Action } from "redux";
 import { Post } from "../reducers";
+import { RcFile } from "antd/lib/upload";
 
 export const CREATE_POST = 'CREATE_POST';
 export const LIST_POSTS = 'LIST_POSTS';
 
-interface CreatePostAction extends Action<string> {
+export type CreatePostActionPayload = CreatePostInput & { coverPhotoFile?: RcFile };
+
+export interface CreatePostAction extends Action<string> {
   type: typeof CREATE_POST,
-  payload: CreatePostInput
+  payload: CreatePostActionPayload
 }
 
 interface ListPostsAction extends Action<string> {

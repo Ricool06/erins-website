@@ -16,5 +16,24 @@
                 "erinswebsite932fe9b0932fe9b0": {}
             }
         }
+    },
+    "devtwo": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-erinswebsite-devtwo-181027-authRole",
+            "UnauthRoleArn": "arn:aws:iam::106887332414:role/amplify-erinswebsite-devtwo-181027-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::106887332414:role/amplify-erinswebsite-devtwo-181027-authRole",
+            "Region": "eu-west-1",
+            "DeploymentBucketName": "amplify-erinswebsite-devtwo-181027-deployment",
+            "UnauthRoleName": "amplify-erinswebsite-devtwo-181027-unauthRole",
+            "StackName": "amplify-erinswebsite-devtwo-181027",
+            "StackId": "arn:aws:cloudformation:eu-west-1:106887332414:stack/amplify-erinswebsite-devtwo-181027/a2138a80-9eaa-11ea-88d2-06fa7988ce00",
+            "AmplifyAppId": "d2iiremtho5ec5"
+        },
+        "categories": {
+            "auth": {
+                "erinswebsite932fe9b0932fe9b0": {},
+                "userPoolGroups": {}
+            }
+        }
     }
 }

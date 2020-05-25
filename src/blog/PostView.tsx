@@ -11,15 +11,15 @@ export interface IPostViewProps {
 const PostView: FC<IPostViewProps> = ({ post }) => {
   return (
     <>
-      <Row>
+      <Row justify='center'>
         <Typography.Title>{post?.title}</Typography.Title>
       </Row>
       <Row>
-        <Col md={4} span={0}></Col>
-        <Col md={16} span={24}>
+        <Col sm={4} span={0}></Col>
+        <Col sm={16} span={24}>
           <ReactMarkdown source={post?.content ?? ''} />
         </Col>
-        <Col md={4} span={0}></Col>
+        <Col sm={4} span={0}></Col>
       </Row>
     </>
   );

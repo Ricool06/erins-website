@@ -1,8 +1,9 @@
 type Post @model @auth(rules: [
-  {allow: owner, operations: [create, update, delete]},
-  {allow: public, operations: [read]}
+  {allow: owner, provider: userPools, operations: [create, update, delete, read]}
+  {allow: public, provider: apiKey, operations: [read]}
 ]) {
   id: ID!
   title: String!
-  content: String
+  content: String,
+  coverPhotoKey: String
 }

@@ -1,23 +1,41 @@
 import { takeLatest, call, all, put, takeLeading, select } from 'redux-saga/effects';
-import { CREATE_POST, PostAction, CreatePostResultAction, LIST_POSTS, ListPostsResultAction, LIST_POSTS_FAILED, FetchPostAction, FetchPostResultAction, FETCH_POST_SUCCEEDED, FETCH_POST_FAILED, FETCH_POST } from '../actions/types';
+import { CREATE_POST, PostAction, CreatePostResultAction, LIST_POSTS, ListPostsResultAction, LIST_POSTS_FAILED, FetchPostAction, FetchPostResultAction, FETCH_POST_SUCCEEDED, FETCH_POST_FAILED, FETCH_POST, CreatePostAction } from '../actions/types';
 import * as mutations from 'src/graphql/mutations';
 import * as queries from 'src/graphql/queries';
-import { API, graphqlOperation } from 'aws-amplify';
+import { API, graphqlOperation, Storage } from 'aws-amplify';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import awsconfig from '../../aws-exports';
 import { selectNextToken, selectPost } from '../selectors';
 import { Post } from '../reducers';
+import { CreatePostInput } from 'src/API';
 
 API.configure(awsconfig);
+Storage.configure(awsconfig);
 
-export function* createPost(postAction: PostAction) {
+export function* createPost(postAction: CreatePostAction) {
   try {
-    yield call(
+    let { payload } = postAction;
+    // const { key: s3ObjectKey } = yield call(
+    //   [Storage, 'put'],
+    //   payload.coverPhotoFile?.uid!, payload.coverPhotoFile);
+
+    const input: CreatePostInput = {
+      title: payload.title,
+      content: payload.content,
+      coverPhotoKey: 's3ObjectKey'
+    };
+
+    const response = yield call(
       [API, 'graphql'],
-      graphqlOperation(mutations.createPost, { input: postAction.payload }));
+      graphqlOperation(mutations.createPost, { input }));
+
+    console.log(response);
+
     yield put<CreatePostResultAction>({ type: 'CREATE_POST_SUCCEEDED' });
   }
-  catch {
+  catch (e) {
+    console.error('Saga error:');
+    console.error(e);
     yield put<CreatePostResultAction>({ type: 'CREATE_POST_FAILED' });
   }
 }

@@ -15,7 +15,8 @@ const postItems: ListPostsItems = [
     title: 'Title',
     _deleted: null,
     _lastChangedAt: 1234,
-    _version: 1
+    _version: 1,
+    coverPhotoKey: 'somephoto.jpg'
   }
 ];
 
@@ -30,7 +31,9 @@ describe('PostGrid', () => {
     const wrapper = shallow(<PostGrid posts={[post]} fetchMore={jest.fn()} />);
 
     const card = wrapper.find(Card);
-    const col = wrapper.find(Col);
+    const col = wrapper
+      .find(Col)
+      .filter({ style: { paddingTop: '1rem' } });
 
     expect(card.props().hoverable).toBeTruthy();
     expect(col.key()).toEqual(post.id);
@@ -40,7 +43,9 @@ describe('PostGrid', () => {
     const wrapper = shallow(<PostGrid posts={[]} fetchMore={jest.fn()} />);
 
     const card = wrapper.find(Card);
-    const col = wrapper.find(Col);
+    const col = wrapper
+      .find(Col)
+      .filter({ style: { paddingTop: '1rem' } });
 
     expect(card.exists()).toBeFalsy();
     expect(col.exists()).toBeFalsy();

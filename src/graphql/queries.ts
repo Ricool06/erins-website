@@ -8,6 +8,7 @@ export const getPost = /* GraphQL */ `
       id
       title
       content
+      coverPhotoKey
       _version
       _deleted
       _lastChangedAt
@@ -26,6 +27,7 @@ export const listPosts = /* GraphQL */ `
         id
         title
         content
+        coverPhotoKey
         _version
         _deleted
         _lastChangedAt
@@ -53,6 +55,7 @@ export const syncPosts = /* GraphQL */ `
         id
         title
         content
+        coverPhotoKey
         _version
         _deleted
         _lastChangedAt

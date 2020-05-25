@@ -8,15 +8,18 @@ import Amplify from 'aws-amplify';
 import awsconfig from './aws-exports';
 import { Provider } from 'react-redux';
 import configureStore from './redux/store';
+import { BrowserRouter as Router } from 'react-router-dom';
 Amplify.configure(awsconfig);
 
 const store = configureStore();
 
 ReactDOM.render(
   // <React.StrictMode>
-    <Provider store={store}>
+  <Provider store={store}>
+    <Router>
       <App />
-    </Provider>,
+    </Router>
+  </Provider>,
   // </React.StrictMode>,
   document.getElementById('root')
 );

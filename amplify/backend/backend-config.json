@@ -38,8 +38,8 @@
                         {
                             "authenticationType": "API_KEY",
                             "apiKeyConfig": {
-                                "description": "PublicForReading",
-                                "apiKeyExpirationDays": "7"
+                                "description": "publicApiKey",
+                                "apiKeyExpirationDays": "365"
                             }
                         }
                     ],
@@ -51,6 +51,12 @@
                     }
                 }
             }
+        }
+    },
+    "storage": {
+        "s32d8cd28a": {
+            "service": "S3",
+            "providerPlugin": "awscloudformation"
         }
     }
 }

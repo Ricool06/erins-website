@@ -3,8 +3,8 @@ import * as mutations from 'src/graphql/mutations';
 import * as queries from 'src/graphql/queries';
 import { createPost, watchCreatePost, rootSaga, listPosts, watchListPosts, fetchPost, watchFetchPost } from '.';
 import { call, takeLatest, put, all, takeLeading, select } from 'redux-saga/effects';
-import { CREATE_POST, CreatePostResultAction, LIST_POSTS, ListPostsResultAction, LIST_POSTS_SUCCEEDED, LIST_POSTS_FAILED, FETCH_POST, FetchPostResultAction, FETCH_POST_SUCCEEDED, FETCH_POST_FAILED } from '../actions/types';
-import { API, graphqlOperation } from 'aws-amplify';
+import { CREATE_POST, CreatePostResultAction, LIST_POSTS, ListPostsResultAction, LIST_POSTS_SUCCEEDED, LIST_POSTS_FAILED, FETCH_POST, FetchPostResultAction, FETCH_POST_SUCCEEDED, FETCH_POST_FAILED, CreatePostActionPayload } from '../actions/types';
+import { API, graphqlOperation, Storage } from 'aws-amplify';
 import { selectNextToken, selectPost } from '../selectors';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import { Post } from '../reducers';
@@ -26,30 +26,70 @@ describe('sagas', () => {
   });
 
   describe('Create post', () => {
-    it('should create a post with the AppSync client', () => {
+    it('should create a post', () => {
       const input: CreatePostInput = {
         title: 'Title!',
-        content: 'Content!'
+        content: 'Content!',
+        coverPhotoKey: 'some.file.key',
       };
 
-      const generator = createPost({ type: CREATE_POST, payload: input });
+      const payload: CreatePostActionPayload = {
+        ...input,
+        coverPhotoFile: {},
+        coverPhotoKey: 'squirrels.jpg'
+      };
+
+      const generator = createPost({ type: CREATE_POST, payload });
+
 
       expect(generator.next().value)
+        .toEqual(call([Storage, 'put'], payload.coverPhotoKey!, payload.coverPhotoFile));
+      expect(generator.next({ key: input.coverPhotoKey }).value)
         .toEqual(call([API, 'graphql'], graphqlOperation(mutations.createPost, { input })));
       expect(generator.next().value)
         .toEqual(put<CreatePostResultAction>({ type: 'CREATE_POST_SUCCEEDED' }));
     });
 
-    it('should put a failed action if the AppSync client fails', () => {
+    it('should put a failed action if the API client fails', () => {
       const input: CreatePostInput = {
         title: 'Title!',
-        content: 'Content!'
+        content: 'Content!',
+        coverPhotoKey: 'some.file.key',
       };
 
-      const generator = createPost({ type: CREATE_POST, payload: input });
+      const payload: CreatePostActionPayload = {
+        ...input,
+        coverPhotoFile: {},
+        coverPhotoKey: 'squirrels.jpg'
+      };
+
+      const generator = createPost({ type: CREATE_POST, payload });
 
       expect(generator.next().value)
+        .toEqual(call([Storage, 'put'], payload.coverPhotoKey!, payload.coverPhotoFile));
+      expect(generator.next({ key: input.coverPhotoKey }).value)
         .toEqual(call([API, 'graphql'], graphqlOperation(mutations.createPost, { input })));
+      expect(generator.throw({}).value)
+        .toEqual(put<CreatePostResultAction>({ type: 'CREATE_POST_FAILED' }));
+    });
+
+    it('should put a failed action if the Storage client fails', () => {
+      const input: CreatePostInput = {
+        title: 'Title!',
+        content: 'Content!',
+        coverPhotoKey: 'some.file.key',
+      };
+
+      const payload: CreatePostActionPayload = {
+        ...input,
+        coverPhotoFile: {},
+        coverPhotoKey: 'squirrels.jpg'
+      };
+
+      const generator = createPost({ type: CREATE_POST, payload });
+
+      expect(generator.next().value)
+        .toEqual(call([Storage, 'put'], payload.coverPhotoKey!, payload.coverPhotoFile));
       expect(generator.throw({}).value)
         .toEqual(put<CreatePostResultAction>({ type: 'CREATE_POST_FAILED' }));
     });
@@ -72,7 +112,8 @@ describe('sagas', () => {
         id,
         owner: 'author',
         title: 'the great tale of sharky the goldfish',
-        _deleted: false
+        _deleted: false,
+        coverPhotoKey: 'somephoto.jpg'
       };
       const generator = fetchPost({ type: FETCH_POST, id });
 
@@ -95,7 +136,8 @@ describe('sagas', () => {
         id,
         owner: 'author',
         title: 'the great tale of sharky the goldfish',
-        _deleted: false
+        _deleted: false,
+        coverPhotoKey: 'somephoto.jpg'
       };
       const queryVars: GetPostQueryVariables = { id };
 
@@ -192,7 +234,8 @@ describe('sagas', () => {
               __typename: 'Post',
               _lastChangedAt: 1234,
               _version: 1,
-              _deleted: false
+              _deleted: false,
+              coverPhotoKey: 'somephoto.jpg'
             }]
           }
         }
